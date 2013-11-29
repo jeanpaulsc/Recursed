@@ -1,0 +1,35 @@
+# coding: utf8
+db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
+
+db.define_table('problem',
+                Field('ProbName', 'text'),
+                Field('Chapter', 'integer'),
+                Field('Problem', 'integer'),
+                Field('Image.p', 'blob'),
+                Field('ProbText', 'text'),
+                Field('Image.s', 'blob'),
+                Field('Solution', 'text'),
+                Field('Status', 'text'),
+                Field('Source', 'text'),
+                Field('Comments', 'text'))
+
+db.define_table('progress',
+                Field('problem_id', 'integer', reference problem),
+                Field('Progress', 'text'),
+                Field('Comments', 'text'))
+
+db.define_table('snode',
+				Field('parent_id', reference self),
+				Field('root', 'integer'),
+				Field('title'),
+				Field('body', text))
+
+db.problem.title.requires = IS_NOT_IN_DB(db, 'page.title')
+db.problem.body.requires = IS_NOT_EMPTY()
+##db.problem.created_by.readable = db.page.created_by.writable = False
+##db.problem.created_on.readable = db.page.created_on.writable = False
+
+db.progress.body.requires = IS_NOT_EMPTY()
+db.progress.problem_id.readable = db.post.page_id.writable = False
+db.progress.created_by.readable = db.post.created_by.writable = False
+db.progress.created_on.readable = db.post.created_on.writable = False
