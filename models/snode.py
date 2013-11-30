@@ -24,19 +24,19 @@ db.define_table('progress',
                 Field('perspective'),
                 Field('body', 'text'),
                 Field('comments', 'text'),
-				Field('created_by'),
-				Field('created_on'))
+		Field('created_by'),
+		Field('created_on'))
 
 '''this is my timer, reminder and monitor'''
 db.define_table('crontime',
-				Field('crontab'),
+		Field('crontab'),
                 format = '%(crontime)s')
 
 db.define_table('snode',
-				Field('parent_id', 'reference self'),
-				Field('root', 'integer'),
-				Field('title'),
-				Field('body', 'text'))
+		Field('parent_id', 'reference self'),
+		Field('root', 'integer'),
+		Field('title'),
+		Field('body', 'text'))
 
 db.problem.probname.requires = IS_NOT_IN_DB(db, 'problem.probname')
 db.problem.body.requires = IS_NOT_EMPTY()
