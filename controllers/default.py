@@ -1,30 +1,33 @@
 # -*- coding: utf-8 -*-
-# this file is released under public domain and you can use without limitations
-
-#########################################################################
-## This is a sample controller
-## - index is the default action of any application
-## - user is required for authentication and authorization
-## - download is for downloading files uploaded in the db (does streaming)
-## - call exposes all registered services (none by default)
-#########################################################################
-
+# {{=response.toolbar()}}
 
 def index():
-	'''This is intended to display problems in groups as chapters'''
+    '''This is intended to display problems in groups as chapters'''
+    problems = db().select(db.problem.id,db.problem.probname,orderby=db.problem.chapter)
     response.flash = T("Prepare to Curse!")
-    return dict(message=T('Hello World'))
+    return dict(problems=problems)
+
+@auth.requires_login()
+def add():
+    '''problems are entered here'''
+    form = SQLFORM(db.progress).process(next=URL('index'))
+    return dict(form=form)
 
 @auth.requires_login()
 def show():
-	image = db.image(request.args(0,cast=int)) or redirect(URL('index'))
-	db.post.image_id.default = image.id
-	form = SQLFORM(db.post)
-	if form.process().accepted:
-		response.flash = 'your comment is posted'
-	comments = db(db.post.image_id==image.id).select()
-	return dict(image=image, comments=comments, form=form)
+    image = db.image(request.args(0,cast=int)) or redirect(URL('index'))
+    db.post.image_id.default = image.id
+    form = SQLFORM(db.post)
+    if form.process().accepted:
+        response.flash = 'your comment is posted'
+    comments = db(db.post.image_id==image.id).select()
+    return dict(image=image, comments=comments, form=form)
 
+@auth.requires_login()
+def comment():
+    '''either insight or criticism, it's done here'''
+    form = SQLFORM(db.progress).process(next=URL('index'))
+    return dict(form=form)
 
 def user():
     """
